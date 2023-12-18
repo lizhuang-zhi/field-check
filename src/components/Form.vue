@@ -43,6 +43,7 @@ export default {
     ]);
     const loading = ref(false);
     const noPassTableData = ref([]); // 检查不通过数据表
+    const NoPassDataFields = ref([]); // 记录每条record没有通过的字段数组
 
     onMounted(async () => {
       loading.value = true;
@@ -63,14 +64,6 @@ export default {
       }
       loading.value = false;
     });
-
-    // const addRecord = async () => {
-    //   const tableId = formData.value.table;
-    //   if (tableId) {
-    //     const table = await bitable.base.getTableById(tableId);
-    //     table.addRecord({ fields: {} });
-    //   }
-    // };
 
     // 获取选中table的所有记录
     const getAllRecordList = async () => {
@@ -95,17 +88,40 @@ export default {
           return [];
         }
         const NoPassData = []; // 未通过验证的数组数据
+        NoPassDataFields.value = [];
         for (let i = startIndexValue; i <= endIndexValue; i++) {
           const record = await table.getRecordById(recordList[i]);
 
+          let ErrCount = 0; // 单条记录验证错误次数
+          let ErrFields = []; // 单条记录验证错误的field字段id
           // 判断单条记录是否通过所有验证
           formData.value.fields.forEach((field) => {
-            checkTypeValueFn(record, field, fieldMetaMap.value, NoPassData);
+            let verify = checkTypeValueFn(record, field, fieldMetaMap.value);
+            if (!verify) {
+              ErrFields.push(field.fieldID);
+              ErrCount++;
+            }
           });
+
+          if (ErrCount !== 0) {
+            NoPassData.push(record);
+            NoPassDataFields.value.push(ErrFields);
+          }
+          ErrCount = 0; // 重置数据
         }
+        console.log(NoPassDataFields)
         return NoPassData;
       }
     };
+    /* 
+      1. 去除重复: 用单条记录进行所有验证, 每个验证不通过的记录+1, 最后记录不为0的才存入NoPassData
+      2. 高亮处理: 维护一个二维数组, 存入的二维度数组为每条NoPassData记录的不通过的列字段id
+      [
+        ["fieldID—1"],
+        ["fieldID—1", "fieldID—4"],     // 这里没有去重复列字段多验证类型的情况
+        ["fieldID—1"],
+      ]
+    */
 
     // 点击查询选中table的所有记录
     const checkAllRecords = async () => {
@@ -147,12 +163,17 @@ export default {
 
     // 错误单元格样式设置
     const cellStyle = ({ row, column, rowIndex, columnIndex }) => {
-      for(let item of formData.value.fields) {
-        if(column.property === item.fieldID) {
-          return {
-            backgroundColor: "yellow", // 设置背景色
-            color: "red", // 设置文本颜色
-          };
+      for (let rIx = 0; rIx < NoPassDataFields.value.length; rIx++) {
+        for (let fIx = 0; fIx < NoPassDataFields.value[rIx].length; fIx++) {
+          if (
+            rowIndex === rIx &&
+            column.property === NoPassDataFields.value[rIx][fIx]
+          ) {
+            return {
+              backgroundColor: "yellow", // 设置背景色
+              color: "red", // 设置文本颜色
+            };
+          }
         }
       }
     };
@@ -171,6 +192,7 @@ export default {
         }
         // 清空其他数据
         noPassTableData.value = [];
+        NoPassDataFields.value = [];
         formData.value.fields = [
           {
             fieldID: "",

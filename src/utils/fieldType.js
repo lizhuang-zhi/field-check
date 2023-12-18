@@ -46,9 +46,8 @@ export function feildTypeToData(fieldType, fieldValue) {
   @param record: 需要检查的记录对象
   @param field: 检查字段对象 { fieldID, checkTypeValue, minNum, maxNum, minCount, maxCount, ...}
   @param fieldMetaMap: 字段元数据映射
-  @param NoPassData: 未通过验证的数组数据
 */
-export function checkTypeValueFn(record, field, fieldMetaMap, noPassData) {
+export function checkTypeValueFn(record, field, fieldMetaMap) {
     const { fieldID, checkTypeValue } = field;
     if (fieldID && checkTypeValue) {
         let fieldValue = record.fields[fieldID];
@@ -63,7 +62,7 @@ export function checkTypeValueFn(record, field, fieldMetaMap, noPassData) {
                 resultFieldValueStr.length < minCount ||
                 resultFieldValueStr.length > maxCount
             ) {
-                noPassData.push(record);
+                return false;
             }
         } else if (checkTypeValue === "trimCheck") {
             // 根据字段类型转换数据(为字符串)
@@ -72,7 +71,7 @@ export function checkTypeValueFn(record, field, fieldMetaMap, noPassData) {
                 fieldValue
             );
             if (resultFieldValueStr.trim() !== resultFieldValueStr) {
-                noPassData.push(record);
+                return false;
             }
         } else if (checkTypeValue === "numRangeCheck") {
             const { minNum, maxNum } = field;
@@ -84,15 +83,16 @@ export function checkTypeValueFn(record, field, fieldMetaMap, noPassData) {
             // 判断是否能够转为数字类型
             if (isNaN(Number(resultFieldValueStr))) {
                 alert(fieldValue + ": 该字段不能转为数字类型");
-                return;
+                return false;
             }
             if (Number(resultFieldValueStr) === 0 && resultFieldValueStr !== "0") {
                 alert(fieldValue + ": 该字段不能转为数字类型");
-                return;
+                return false;
             }
             if (Number(resultFieldValueStr) < minNum || Number(resultFieldValueStr) > maxNum) {
-                noPassData.push(record);
+                return false;
             }
         }
     }
+    return true;
 };
