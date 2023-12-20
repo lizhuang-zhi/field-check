@@ -9,7 +9,7 @@ import Checkerboard from 'vite-plugin-checker';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: "https://github.com/lizhuang-zhi/field-check",
+  base: "https://lizhuang-zhi.github.io/field-check",
   server: {
     host: true
   },
