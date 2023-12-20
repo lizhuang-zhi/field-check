@@ -207,7 +207,7 @@ export default {
 
     // ************************ 类型方法 ****************************
     const changeNumRange = async (data) => {
-      console.log(data);
+      // console.log(data);
       const { fieldIndex, checkTypeValue } = data;
       if (checkTypeValue === "numRangeCheck") {
         let { minNum, maxNum } = data;
