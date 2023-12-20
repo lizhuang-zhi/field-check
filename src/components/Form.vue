@@ -52,9 +52,6 @@ export default {
         bitable.base.getSelection(),
         bitable.base.getActiveTable(),
       ]);
-      // console.log(tableList);
-      // console.log(selection);
-      // console.log(table);
       const view = await table.getViewById(selection.viewId);
       formData.value.table = selection.tableId;
       tableMetaList.value = tableList;
