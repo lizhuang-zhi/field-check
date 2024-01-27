@@ -92,6 +92,10 @@ export default {
 
     // 小窗选择记录
     const selectRecords = async () => {
+      // 清空selsectRecordList
+      selectRecordList.value = [];
+
+      // 重新获取选中记录
       const { tableId, viewId } = await bitable.base.getSelection();
       const recordIdList = await bitable.ui.selectRecordIdList(tableId, viewId);
       const table = await bitable.base.getActiveTable();
@@ -103,18 +107,21 @@ export default {
     // 点击查询记录
     const checkSelectRecords = async () => {
       loading.value = true;
-      const recordList = await getAllRecordList();
-      if (recordList.length === 0) {
+      if (selectRecordList.value.length === 0) {
         // 全局提示
         await bitable.ui.showToast({
           toastType: "error",
           message: "请先选择需要检查的记录",
         });
+        loading.value = false;
         return;
       }
 
+      // 验证选中记录
+      let noPassDataRecordList = await verifyAllRecords();
+
       noPassTableData.value = [];
-      for (let item of recordList) {
+      for (let item of noPassDataRecordList) {
         let data = {};
         for (let key in item.fields) {
           data[key] = feildTypeToData(
@@ -152,8 +159,8 @@ export default {
     };
 
     // ************************ 业务代码 ****************************
-    // 获取选中table的所有记录
-    const getAllRecordList = async () => {
+    // 验证选中记录, 返回不通过的记录
+    const verifyAllRecords = async () => {
       if (selectRecordList.value.length == 0) {
         return [];
       }

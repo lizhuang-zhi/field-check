@@ -36,7 +36,8 @@ export function feildTypeToData(fieldType, fieldValue) {
         case 1004:  // 人员字段
             return fieldValue[0].name
         default:
-            throw new Error('该字段类型暂不支持:' + fieldType + " " + fieldValue)  // 其他字段类型, 暂不支持
+            console.log(fieldValue)
+            throw new Error('该字段类型暂不支持:' + fieldType + " ")  // 其他字段类型, 暂不支持
         // return ''  // 其他字段类型, 暂不支持
     }
 }

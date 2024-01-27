@@ -47,21 +47,23 @@ export default {
 
 <template>
   <div class="num_range">
-    <div class="box">
-      <div class="min_cont">最小数值限制:</div>
-      <el-input
+    <div class="title">请输入数值范围:</div>
+    <div class="rang_box">
+      <el-input-number
         v-model="minNumInput"
-        type="number"
-        placeholder="请输入最小数值限制"
+        class="mx-4"
+        :min="1"
+        :max="99999"
+        controls-position="right"
         @change="changeNumRange"
       />
-    </div>
-    <div class="box">
-      <div class="max_cont">最大数值限制:</div>
-      <el-input
+      <div class="middle">至</div>
+      <el-input-number
         v-model="maxNumInput"
-        type="number"
-        placeholder="请输入最大数值限制"
+        class="mx-4"
+        :min="1"
+        :max="99999"
+        controls-position="right"
         @change="changeNumRange"
       />
     </div>
@@ -70,11 +72,30 @@ export default {
 
 <style scoped lang="less">
 .num_range {
+  margin-top: 20px;
   display: flex;
   align-items: center;
-  .box {
-    margin-right: 30px;
+  .title {
+    margin-right: 10px;
     font-size: 14px;
+    color: #555;
+  }
+  .rang_box {
+    display: flex;
+    .middle {
+      margin-left: 10px;
+      margin-right: 10px;
+    }
+    // 调整 el-input-number 中的输入框宽度
+    .el-input-number--large {
+      width: 130px; // 根据需要调整宽度
+      .el-input--large {
+        .el-input__wrapper {
+          width: 100%;
+          padding-left: 0;
+        }
+      }
+    }
   }
 }
 </style>
