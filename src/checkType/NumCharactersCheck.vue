@@ -47,7 +47,7 @@ export default {
 
 <template>
   <div class="num_characters">
-    <div class="title">请输入字符个数范围:</div>
+    <div class="title">请输入数值范围:</div>
     <div class="rang_box">
       <el-input-number
         v-model="minCountInput"
