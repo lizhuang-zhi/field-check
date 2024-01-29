@@ -327,6 +327,7 @@ export default {
           <NumCharactersCheck
             v-show="field.checkTypeValue === 'numCharactersCheck'"
             :fieldIndex="fieldIndex"
+            @changeNumRange="changeNumRange"
           />
           <TrimCheck
             v-show="field.checkTypeValue === 'trimCheck'"
