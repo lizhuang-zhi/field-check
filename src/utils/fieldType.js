@@ -35,6 +35,8 @@ export function feildTypeToData(fieldType, fieldValue) {
             return fieldValue.text   // 被关联记录的文本汇总值，用 , 连接
         case 1004:  // 人员字段
             return fieldValue[0].name
+        // case 15:  // 超链接字段
+        //     return fieldValue[0].name
         default:
             console.log(fieldValue)
             throw new Error('该字段类型暂不支持:' + fieldType + " ")  // 其他字段类型, 暂不支持

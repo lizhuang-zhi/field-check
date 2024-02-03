@@ -8,7 +8,7 @@ npm run build
 
 # 将改动提交到 main 分支
 git add .
-git commit -m 'Update main branch'
+git commit -m "$1"
 git push origin main
 
 # 执行 npm run deploy 部署到 GitHub Pages

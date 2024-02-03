@@ -117,6 +117,13 @@ export default {
         return;
       }
 
+      // 检查规则匹配类型是否正确
+      let checkRes = await checkVerifyFieldType();
+      if (!checkRes) {
+        loading.value = false;
+        return;
+      }
+
       // 验证选中记录
       let noPassDataRecordList = await verifyAllRecords();
 
@@ -133,7 +140,18 @@ export default {
           ...data,
         });
       }
-      console.log(noPassTableData.value);
+
+      if (noPassTableData.value.length === 0) {
+        loading.value = false;
+        // 全局提示
+        await bitable.ui.showToast({
+          toastType: "success",
+          message: "所有记录验证通过",
+        });
+        return;
+      }
+
+      // console.log(noPassTableData.value);
       loading.value = false;
     };
 
@@ -188,19 +206,10 @@ export default {
           }
           ErrCount = 0; // 重置数据
         }
-        console.log(NoPassDataFields);
+        // console.log(NoPassDataFields);
         return NoPassData;
       }
     };
-    /* 
-      1. 去除重复: 用单条记录进行所有验证, 每个验证不通过的记录+1, 最后记录不为0的才存入NoPassData
-      2. 高亮处理: 维护一个二维数组, 存入的二维度数组为每条NoPassData记录的不通过的列字段id
-      [
-        ["fieldID—1"],
-        ["fieldID—1", "fieldID—4"],     // 这里没有去重复列字段多验证类型的情况
-        ["fieldID—1"],
-      ]
-    */
 
     // 错误单元格样式设置
     const cellStyle = ({ row, column, rowIndex, columnIndex }) => {
@@ -217,6 +226,45 @@ export default {
           }
         }
       }
+    };
+
+    // 检查规则匹配类型是否正确
+    const checkVerifyFieldType = () => {
+      console.log(fieldMetaMap.value);
+      for (let item of formData.value.fields) {
+        // 获取字段类型
+        let fieldType = fieldMetaMap.value[item.fieldID].type;
+        // 获取检查类型
+        let checkType = item.checkTypeValue;
+        if (checkType === "numCharactersCheck" && fieldType !== 1) {
+          // 全局提示
+          bitable.ui.showToast({
+            toastType: "error",
+            message: "字符个数验证目前仅支持用于文本类型字段",
+          });
+          return false;
+        } else if (checkType === "trimCheck" && fieldType !== 1) {
+          // 全局提示
+          bitable.ui.showToast({
+            toastType: "error",
+            message: "前后空格验证目前仅支持用于文本类型字段",
+          });
+          return false;
+        } else if (
+          checkType === "numRangeCheck" &&
+          fieldType !== 1 &&
+          fieldType !== 2
+        ) {
+          // 全局提示
+          bitable.ui.showToast({
+            toastType: "error",
+            message: "数字范围验证目前仅支持用于数字类型字段、文本类型字段",
+          });
+          return false;
+        }
+      }
+
+      return true;
     };
 
     // ************************ 类型方法 ****************************
